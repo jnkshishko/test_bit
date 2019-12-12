@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+  api:
+    restart: always
+    build: ./api
+    working_dir: /api
+    volumes:
+      - ./api:/api
+      - ~/.m2:/root/.m2
+    ports:
+      - 8080:8080
+    command: mvn clean spring-boot:run
+    depends_on:
+      - db
+      - rabbitmq
+  server:
+    restart: always
+    build: ./server
+    working_dir: /server
+    volumes:
+      - ./server:/server
+      - ~/.m2:/root/.m2
+    ports:
+      - 8081:8080
+    command: mvn clean spring-boot:run
+    depends_on:
+      - db
+      - rabbitmq
+  db:
+    image: postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /var/lib/postgres/data
+    restart: always
+    environment:
+      - POSTGRES_DB=root
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=12345
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./data:/var/lib/rabbitmq:rw
+      - ./definitions.json:/opt/definitions.json:ro
+      - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+    - 8083:8080

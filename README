@@ -1,0 +1,7 @@
+#
+# docker-compose up
+#
+# curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data '{"first": "10", "second": "5"}' "http://localhost:8080/calculate-gcd"
+#
+# curl  "http://localhost:8080/get-result/1"
+#
